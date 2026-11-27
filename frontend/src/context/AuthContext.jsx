@@ -17,13 +17,39 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('lh_token');
     const cached = localStorage.getItem('lh_user');
 
+    const clearSession = () => {
+      localStorage.removeItem('lh_token');
+      localStorage.removeItem('lh_user');
+      setAuthToken(null);
+      setUser(null);
+      setReady(true);
+    };
+
     if (!token || !cached) {
+      if (!token) localStorage.removeItem('lh_user');
+      setAuthToken(token || null);
       setReady(true);
       return;
     }
 
+    let cachedUser;
+    try {
+      cachedUser = JSON.parse(cached);
+      if (
+        !cachedUser ||
+        typeof cachedUser !== 'object' ||
+        !cachedUser.id ||
+        typeof cachedUser.full_name !== 'string'
+      ) {
+        throw new Error('Invalid cached user.');
+      }
+    } catch {
+      clearSession();
+      return;
+    }
+
     setAuthToken(token);
-    setUser(JSON.parse(cached));
+    setUser(cachedUser);
 
     api
       .get('/auth/me')
@@ -36,6 +62,13 @@ export function AuthProvider({ children }) {
         setUser(null);
       })
       .finally(() => setReady(true));
+  }, []);
+
+  // Keep this tab in sync when the API interceptor rejects an expired token
+  useEffect(() => {
+    const clearUser = () => setUser(null);
+    window.addEventListener('lh-auth-cleared', clearUser);
+    return () => window.removeEventListener('lh-auth-cleared', clearUser);
   }, []);
 
   const login = useCallback(async (email, password) => {

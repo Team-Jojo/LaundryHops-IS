@@ -4,8 +4,7 @@ import { api, errMsg } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/StatusBadge';
 import { toast } from '../components/Toast';
-import { STATUS_STEPS } from '../constants';
-import { formatMoney, prettyDate, prettyDateTime, qtyLabel } from '../constants';
+import { STATUS_STEPS, formatMoney, prettyDate, prettyDateTime, qtyLabel } from '../constants';
 
 export default function Tracking() {
   const { id } = useParams();
@@ -14,6 +13,7 @@ export default function Tracking() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    setError('');
     api
       .get(`/bookings/${id}`)
       .then((res) => setBooking(res.data.booking))

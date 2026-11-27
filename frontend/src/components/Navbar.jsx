@@ -32,7 +32,7 @@ export default function Navbar() {
         {user ? (
           <>
             <span className="user-chip">
-              Hi, {user.full_name.split(' ')[0]}
+              Hi, {(user.full_name || 'there').split(' ')[0]}
               {isAdmin && <span className="chip-role">admin</span>}
             </span>
             <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
