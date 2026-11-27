@@ -17,6 +17,10 @@ export const STATUS_TRANSITIONS = {
 export const nextStatus = (status) =>
   (STATUS_TRANSITIONS[status] || []).find((s) => s !== 'cancelled') || null;
 
+// All forward actions (e.g. `ready` can become `delivered` or `claimed`).
+export const statusActions = (status) =>
+  (STATUS_TRANSITIONS[status] || []).filter((s) => s !== 'cancelled');
+
 export const canCancel = (status) =>
   (STATUS_TRANSITIONS[status] || []).includes('cancelled');
 

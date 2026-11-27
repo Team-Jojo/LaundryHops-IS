@@ -10,6 +10,7 @@ export default function AdminPayments() {
   const [status, setStatus] = useState('');
 
   const load = useCallback(() => {
+    setError('');
     const params = {};
     if (status) params.status = status;
     api
@@ -23,7 +24,7 @@ export default function AdminPayments() {
   const markPaid = async (payment) => {
     try {
       await api.patch(`/payments/${payment.id}`);
-      toast(`Payment #${payment.id} recorded as paid (₱${payment.amount}).`, 'success');
+      toast(`Payment #${payment.id} recorded as paid (${formatMoney(payment.amount)}).`, 'success');
       load();
     } catch (e) {
       toast(errMsg(e), 'error');

@@ -8,6 +8,7 @@ export default function MyBookings() {
   const [error, setError] = useState('');
 
   const load = useCallback(() => {
+    setError('');
     api
       .get('/bookings')
       .then((res) => setBookings(res.data.bookings))

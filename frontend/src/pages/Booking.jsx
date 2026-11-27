@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api, errMsg } from '../services/api';
-import { toast } from '../components/Toast';
 import { formatMoney, unitLabel, qtyLabel, todayStr, prettyDate } from '../constants';
 
 export default function Booking() {
@@ -14,10 +13,12 @@ export default function Booking() {
   const [quantity, setQuantity] = useState(3);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
+  const [slotError, setSlotError] = useState('');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(null);
 
   useEffect(() => {
+    setError('');
     api
       .get(`/services/${id}`)
       .then((res) => {
@@ -29,12 +30,13 @@ export default function Booking() {
 
   useEffect(() => {
     if (!date) return;
+    setSlotError('');
     setSlots(null);
     setSlot('');
     api
       .get('/bookings/slots', { params: { date } })
       .then((res) => setSlots(res.data.slots))
-      .catch((e) => setError(errMsg(e)));
+      .catch((e) => setSlotError(errMsg(e)));
   }, [date]);
 
   const total = useMemo(
@@ -115,6 +117,7 @@ export default function Booking() {
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
+      {slotError && <div className="alert alert-error">{slotError}</div>}
 
       <form className="card" onSubmit={submit}>
         <div className="form">

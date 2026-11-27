@@ -11,6 +11,7 @@ export default function Catalog() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setError('');
     api
       .get('/services')
       .then((res) => setServices(res.data.services))

@@ -19,6 +19,7 @@ export default function AdminServices() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(() => {
+    setError('');
     api
       .get('/services')
       .then((res) => setServices(res.data.services))
@@ -35,7 +36,7 @@ export default function AdminServices() {
 
   const startCreate = () => {
     setEditingId(null);
-    setForm(emptyForm);
+    setForm({ ...emptyForm });
   };
 
   const startEdit = (service) => {
@@ -68,7 +69,7 @@ export default function AdminServices() {
         toast(`Service "${form.name}" created.`, 'success');
       }
       setEditingId(null);
-      setForm(emptyForm);
+      setForm({ ...emptyForm });
       load();
     } catch (err) {
       toast(errMsg(err), 'error');

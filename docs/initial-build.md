@@ -95,10 +95,9 @@ These are intentional scope boundaries or follow-up items, not blockers for the 
 2. **Local dates.** Delivery-date validation and dashboard "today" use the server's local date; the smoke test/Postman "tomorrow" uses UTC, so runs started near midnight may disagree.
 3. **Slot capacity check is not transactional.** The count happens before the booking/payment transaction, so simultaneous requests can race. Capacity is enforced on the normal single-request path.
 4. **JWT fallback secret.** `JWT_SECRET` must be set in every deployed environment; the code falls back to `dev-secret` for local convenience.
-5. **Admin UI exposes one next step from `ready` (`delivered`).** `claimed` is available through the API and is shown in tracking, but the one-click UI does not offer it yet.
-6. **No frontend E2E suite or lint script.** UI is covered by manual test cases; API has the smoke suite and Postman collection.
-7. **External font CDN.** Inter, Poppins, and Material Symbols load from Google Fonts; offline demos use fallback fonts and icon names may appear as text.
-8. **Repeated automated runs need a DB reset** because of slot capacity (see §3).
+5. **No frontend E2E suite or lint script.** UI is covered by manual test cases; API has the smoke suite and Postman collection.
+6. **External font CDN.** Inter, Poppins, and Material Symbols load from Google Fonts; offline demos use fallback fonts and icon names may appear as text.
+7. **Repeated automated runs need a DB reset** because of slot capacity (see §3).
 
 ---
 

@@ -2,8 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, errMsg } from '../../services/api';
 import StatusBadge from '../../components/StatusBadge';
 import { toast } from '../../components/Toast';
-import { STATUS_TRANSITIONS, nextStatus, canCancel } from '../../constants';
-import { formatMoney, prettyDate, qtyLabel } from '../../constants';
+import {
+  STATUS_TRANSITIONS,
+  canCancel,
+  formatMoney,
+  prettyDate,
+  qtyLabel,
+  statusActions,
+} from '../../constants';
 
 const STATUSES = ['pending', 'confirmed', 'received', 'washing', 'ready', 'delivered', 'claimed', 'cancelled'];
 
@@ -14,6 +20,7 @@ export default function AdminBookings() {
   const [date, setDate] = useState('');
 
   const load = useCallback(() => {
+    setError('');
     const params = {};
     if (status) params.status = status;
     if (date) params.date = date;
@@ -25,8 +32,7 @@ export default function AdminBookings() {
 
   useEffect(load, [load]);
 
-  const advance = async (booking) => {
-    const next = nextStatus(booking.status);
+  const advance = async (booking, next) => {
     if (!next) return;
     try {
       await api.patch(`/bookings/${booking.id}/status`, { status: next });
@@ -111,13 +117,13 @@ export default function AdminBookings() {
             </thead>
             <tbody>
               {bookings.map((b) => {
-                const next = nextStatus(b.status);
+                const actions = statusActions(b.status);
                 return (
                   <tr key={b.id}>
                     <td>{b.id}</td>
                     <td>
-                      {b.customer ? b.customer.full_name : '—'}
-                      <div className="muted small">{b.customer ? b.customer.email : ''}</div>
+                      {b.customer?.full_name || '—'}
+                      <div className="muted small">{b.customer?.email || ''}</div>
                     </td>
                     <td>
                       {b.service ? b.service.name : '—'}
@@ -138,17 +144,23 @@ export default function AdminBookings() {
                     </td>
                     <td>
                       <div className="btn-row nowrap">
-                        {next && (
-                          <button className="btn btn-primary btn-sm" onClick={() => advance(b)}>
-                            → {next}
+                        {actions.map((action) => (
+                          <button
+                            key={action}
+                            className="btn btn-primary btn-sm"
+                            onClick={() => advance(b, action)}
+                          >
+                            → {action}
                           </button>
-                        )}
+                        ))}
                         {canCancel(b.status) && (
                           <button className="btn btn-danger btn-sm" onClick={() => cancel(b)}>
                             Cancel
                           </button>
                         )}
-                        {!next && !canCancel(b.status) && <span className="muted small">—</span>}
+                        {actions.length === 0 && !canCancel(b.status) && (
+                          <span className="muted small">—</span>
+                        )}
                       </div>
                     </td>
                   </tr>
