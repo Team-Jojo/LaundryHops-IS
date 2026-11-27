@@ -245,7 +245,7 @@ Auth: `Authorization: Bearer <token>` for protected routes. `A` = admin only.
 | GET | `/payments/:id` | A | Receipt (booking + service + customer) |
 | PATCH | `/payments/:id` | A | Mark paid (only when booking is ready/delivered/claimed) |
 
-Full request/response examples and automated tests: [`docs/postman/LaundryHops.postman_collection.json`](docs/postman/LaundryHops.postman_collection.json).
+Automated API tests: [`docs/postman/LaundryHops.postman_collection.json`](docs/postman/LaundryHops.postman_collection.json). Endpoint contracts, response envelopes, and error codes: [`docs/api-reference.md`](docs/api-reference.md).
 
 ---
 
@@ -254,7 +254,7 @@ Full request/response examples and automated tests: [`docs/postman/LaundryHops.p
 - **Slots:** `09:00-11:00`, `13:00-15:00`, `16:00-18:00`; max **5** bookings per date + slot; cancelled bookings free capacity.
 - **Dates:** delivery date cannot be in the past.
 - **Pricing:** `total_amount = service.price × quantity` (quantity may be fractional, ≥ 0.5).
-- **Status flow:** `pending → confirmed → received → washing → ready → delivered | claimed`; `cancelled` allowed only from `pending`/`confirmed`. Skipping a step → `400`; changing a final state → `409`.
+- **Status flow:** `pending → confirmed → received → washing → ready → delivered | claimed`. Customers cancel only while `pending` via `PATCH /bookings/:id/cancel`; admins may cancel `pending`/`confirmed` bookings via `PATCH /bookings/:id/status` with `{"status":"cancelled"}`. Skipping a step → `400`; changing a final state → `409`.
 - **Payments:** one per booking, method `cash`, created `unpaid`, deleted on cancellation; payable only when the booking is `ready`, `delivered`, or `claimed`; paying twice → `409`.
 - **Security:** bcrypt (cost 10) password hashing, JWT expiry `1d`, `verifyToken` + `requireAdmin` guards, ownership checks on bookings, passwords never serialized.
 
@@ -299,6 +299,8 @@ Manual QA: [`docs/qa/test-cases.md`](docs/qa/test-cases.md) · regression: [`doc
 | [`Plan.md`](Plan.md) — scope, schema, API contract, phases, theme | Regie |
 | [`TEAM_FILES.md`](TEAM_FILES.md) — per-member file ownership & GitHub workflow | Regie |
 | [`docs/README.md`](docs/README.md) — documentation index | Regie |
+| [`docs/api-reference.md`](docs/api-reference.md) — endpoints, errors, status rules | Christian / Team Jojo |
+| [`docs/initial-build.md`](docs/initial-build.md) — release notes, verification, PR body | Christian |
 | [`docs/database/erd.md`](docs/database/erd.md) — ERD + data dictionary | Regie / Christian |
 | [`docs/milestones/phase-reports.md`](docs/milestones/phase-reports.md) — milestone sign-offs | Regie |
 | [`docs/demo-walkthrough.md`](docs/demo-walkthrough.md) — defense script | Regie |

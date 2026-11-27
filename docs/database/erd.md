@@ -119,9 +119,14 @@ Indexes: `bookings(delivery_date, time_slot)` (slot availability), `bookings(sta
 pending → confirmed → received → washing → ready → delivered
                                                   ↘ claimed
 
-pending   → cancelled
-confirmed → cancelled
 ```
+
+Cancellation has two paths:
+
+- Customer: `PATCH /bookings/:id/cancel` is allowed only while `pending`.
+- Admin: `PATCH /bookings/:id/status` with `{"status":"cancelled"}` is allowed from `pending` or `confirmed`.
+
+Cancelled bookings release their slot capacity and have their payment row removed.
 
 | Status | Meaning | Payable? |
 |---|---|---|
